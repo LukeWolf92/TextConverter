@@ -671,11 +671,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\lalonzi\\source\\repos\\TextConverter\\TextConverter\\TextConverter.csproj",
+      "projectUniqueName": "C:\\Progetti\\TextConverter\\TextConverter\\TextConverter.csproj",
       "projectName": "TextConverter",
-      "projectPath": "C:\\Users\\lalonzi\\source\\repos\\TextConverter\\TextConverter\\TextConverter.csproj",
+      "projectPath": "C:\\Progetti\\TextConverter\\TextConverter\\TextConverter.csproj",
       "packagesPath": "C:\\Users\\lalonzi\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\lalonzi\\source\\repos\\TextConverter\\TextConverter\\obj\\",
+      "outputPath": "C:\\Progetti\\TextConverter\\TextConverter\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackagesFallback\\",

@@ -5,96 +5,68 @@ namespace TextConverter
 {
     class Program
     {
-        public static readonly utilsXML handleXML = new utilsXML();
-        public static readonly utilsText handleText = new utilsText();
-        public static readonly string currentPath = System.IO.Directory.GetCurrentDirectory();
+        private static readonly utilsXML handleXML = new utilsXML();
+        private static readonly utilsText handleText = new utilsText();
         public static Dictionary<string, string> configXML;
+        private static Measurements measurements = new Measurements();
+        private static List<Measurements> inputData = new List<Measurements>();
+        private static string[] fileName;
+        private static string fileFormat;
+        private static int refreshTime;
+        
 
         static void Main(string[] args)
         {                       
             Console.WriteLine("------------------TEXT CONVERTER PROGRAM----------------");
-            configXML = handleXML.readFromXML("config.xml", currentPath);
-            int refreshTime = Convert.ToInt16(configXML["refreshTime"]);
-            List<Measurements> output = new List<Measurements>();
+            // INITIALIZER
+            Initializer();
 
             // INIZIO LETTURA CICLICA
-            List<Dictionary<string, string>> inputData = new List<Dictionary<string, string>>();
             while (true)
             {
                 // --------------------- RETRIEVING DATA FROM INPUT ---------------------
                 try
                 {
-                    inputData = new List<Dictionary<string, string>>(); // ripulisco l'oggetto creandomene uno nuovo
-                    if (configXML["inputType"] == "txt")
+                    inputData = new List<Measurements>();
+
+                    if (fileFormat == "TXT")
                     {                        
                         inputData = handleText.readFromTXT();
                     }
-                    else if (configXML["inputType"] == "xml") 
+                    else if (fileFormat == "XML") 
                     {                        
                         inputData = handleXML.readFromXML();
                     }
                 }                
                 catch (Exception ex1)
                 {
-                    Console.WriteLine("ERROR: Failed to read from input\n" + ex1);
+                    Console.WriteLine("ERROR: Failed to read from input:\n" + ex1);
                     throw;
                 }
 
                 // --------------------- GENERATING OUTPUT FILE --------------------- //
-                if ( inputData.Capacity == 0 )
+                if ( inputData.Capacity != 0 )
                 {
-                    Console.WriteLine("The input is empty, no output is going to be generated");
+                    /* ------------------------------------------*
+                     *      FARE PARTE DI SCRITTURA OUTPUT       *
+                     *-------------------------------------------*/
                 }
                 else 
                 {
-                    try
-                    {
-                        /* ------------------------------------------*
-                         *      FARE PARTE DI SCRITTURA OUTPUT       *
-                         *-------------------------------------------*/
-                        Measurements measurements = new Measurements();
-                        
-                        Console.WriteLine("Sto scrivendo l'output...Numero di tests: " + (inputData.Capacity - 1));                        
-                        foreach ( var dict in inputData )
-                        {
-                            measurements = new Measurements();
-                            foreach ( var keyValue in dict )
-                            {
-                                Console.WriteLine(keyValue);
-                                switch (keyValue.Key)
-                                {
-                                    case "TimeStamp":
-                                        measurements.TimeStamp = Convert.ToDateTime(keyValue.Value);
-                                        break;
-                                    case "MachineType":
-                                        measurements.MachineType = keyValue.Value;
-                                        break;
-                                    case "Part":
-                                        measurements.Part = keyValue.Value;
-                                        break;
-                                    case "ValueKind":
-                                        measurements.ValueKind = keyValue.Value;
-                                        break;
-                                    case "Value":
-                                        measurements.Value = Convert.ToDouble(keyValue.Value);
-                                        break;
-                                    default:
-                                        break;
-                                }                                    
-                            }
-                            output.Add(measurements);
-                        }
-                    }
-                    catch (Exception ex2)
-                    {
-                        Console.WriteLine("ERROR: Failed to store the output\n" + ex2);
-                        throw;
-                    }
-                    int pippo = output.Capacity;
+                    Console.WriteLine("The input is empty, no output is going to be generated");
                 }
                 
+                // REFRESH TIMER
                 System.Threading.Thread.Sleep(refreshTime);
+                inputData.Clear();
             }
+        }
+        public static void Initializer()
+        {
+            configXML = handleXML.readFromXML("config.xml", System.IO.Directory.GetCurrentDirectory());
+            refreshTime = Convert.ToInt16(configXML["refreshTime"]);
+            fileName = configXML["inputFile"].Split('.');
+            fileFormat = fileName[fileName.GetLength(0) - 1].ToUpper();
         }
     }    
 }

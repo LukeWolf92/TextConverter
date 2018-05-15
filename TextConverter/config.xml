@@ -1,14 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <config>
   <input>
-    <inputType>xml</inputType> <!-- txt/xml-->
     <inputPathDirectory>C:\TextConverter\Input</inputPathDirectory>
     <inputFile>keyXmlExample.xml</inputFile>
-    <inputFormat>separatedLines</inputFormat> <!-- separatedLines/singleLine IRRELEVANT FOR XML-->
+    <inputFormat>separatedRows</inputFormat> <!-- separatedRows/singleLine IRRELEVANT FOR XML-->
     <splitKeyValue>=</splitKeyValue> <!-- The char that separate key from value IRRELEVANT FOR XML-->
     <splitVariables>,</splitVariables> <!-- The string that separate each variable IRRELEVANT FOR XML -->
-    <firstXmlValue>TimeStamp</firstXmlValue>
-    <lastXmlValue>Value</lastXmlValue>
+    <firstValue>TimeStamp</firstValue>
+    <lastValue>Value</lastValue>
   </input>
   <output>
     <outputPathDirectory>C:\TextConverter\Output</outputPathDirectory>

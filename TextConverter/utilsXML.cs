@@ -1,20 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.Xml;
+using System;
 
 namespace TextConverter
 {
     class utilsXML
     {
+        private static Measurements measurements = new Measurements();
+        private static List<Measurements> measurementsList = new List<Measurements>();
         // USING FILE AND PATH FETCHED FROM CONFIG.XML
-        public List<Dictionary<string, string>> readFromXML()
+        public List<Measurements> readFromXML()
         {            
             string fileName = Program.configXML["inputFile"];
             string pathToXML = Program.configXML["inputPathDirectory"];
-            string firstXmlValue = Program.configXML["firstXmlValue"];
-            string lastXmlValue = Program.configXML["lastXmlValue"];
+            string firstValue = Program.configXML["firstValue"];
+            string lastValue = Program.configXML["lastValue"];
             string key_dict = "";
-            var dictXML = new Dictionary<string, string>();
-            var PIPPO = new List<Dictionary<string, string>>();
 
             XmlTextReader reader = new XmlTextReader(pathToXML + "\\" + fileName);
             while (reader.Read())
@@ -26,14 +27,14 @@ namespace TextConverter
                         break;
                     case XmlNodeType.Text:            //Display the text in each element.     
                         {
-                            if (key_dict == firstXmlValue)
-                            {                                
-                                dictXML = new Dictionary<string, string>();
-                            }
-                            dictXML.Add(key_dict, reader.Value);
-                            if (key_dict == lastXmlValue)
+                            if (key_dict == firstValue)
                             {
-                                PIPPO.Add(dictXML);
+                                measurements = new Measurements();
+                            }
+                            StoreMeasurements(key_dict, reader.Value);                            
+                            if (key_dict == lastValue)
+                            {
+                                measurementsList.Add(measurements);
                             }
                             break;
                         }                        
@@ -41,7 +42,7 @@ namespace TextConverter
                         break;
                 }                                
             }
-            return PIPPO;
+            return measurementsList;
         }
 
         // WHEN THE FILE AND THE PATH ARE FORCED IN
@@ -65,6 +66,30 @@ namespace TextConverter
                 }
             }            
             return dictXML;
+        }
+
+        private static void StoreMeasurements(string key, string value)
+        {
+            switch (key.ToUpper())
+            {
+                case "TIMESTAMP":
+                    measurements.TimeStamp = Convert.ToDateTime(value);
+                    break;
+                case "MACHINETYPE":
+                    measurements.MachineType = value;
+                    break;
+                case "PART":
+                    measurements.Part = value;
+                    break;
+                case "VALUEKIND":
+                    measurements.ValueKind = value;
+                    break;
+                case "VALUE":
+                    measurements.Value = Convert.ToDouble(value);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

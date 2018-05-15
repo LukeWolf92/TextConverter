@@ -5,81 +5,72 @@ using System.Collections.Generic;
 namespace TextConverter
 {
     class utilsText
-    {        
-        public List<Dictionary<string, string>> readFromTXT()
-        {
-            var inputListData = new List<Dictionary<string, string>>();
+    {
+        private static Measurements measurements = new Measurements();
+        private static List<Measurements> measurementsList = new List<Measurements>();
+        public List<Measurements> readFromTXT()
+        {                      
             // Retrieve the info from the config.xml
             string splitKeyValue = Program.configXML["splitKeyValue"];
             string splitVariables = Program.configXML["splitVariables"];
+            string firstValue = Program.configXML["firstValue"].ToUpper();
+            string lastValue = Program.configXML["lastValue"].ToUpper();
             string inputFile = Program.configXML["inputFile"];
             string inputPathDirectory = Program.configXML["inputPathDirectory"];
-            string inputFormat = Program.configXML["inputFormat"];             
+            string inputFormat = Program.configXML["inputFormat"];
+            string[] rows;
 
-
-            switch (inputFormat)
+            if (inputFormat == "singleLine")
             {
-                case "separatedLines":
-                    {
-                        var lines = File.ReadLines(inputPathDirectory + "\\" + inputFile);
-                        Dictionary<string, string> dictText = null;
-
-                        foreach (var line in lines)
-                        {
-                            string[] tokens = line.Split(splitKeyValue); // Use the splitKeyValue from the config.xml
-
-                            if (tokens[0].Contains("timestamp"))
-                            {
-                                if (dictText != null)
-                                {
-                                    inputListData.Add(dictText);
-                                }
-                                dictText = new Dictionary<string, string>();
-                            }
-                            dictText.Add(tokens[0], tokens[1]);
-                        }
-                        if (dictText != null)
-                        {
-                            inputListData.Add(dictText);
-                        }
-                    }
-                    break;
-
-                case "singleLine":
-                    {
-                        string content = File.ReadAllText(inputPathDirectory + "\\" + inputFile);
-                        string[] lines = content.Split(splitVariables); // Uses the splitVariables from the config.xml
-                        Dictionary<string, string> dictText = null;
-
-                        foreach (var line in lines)
-                        {
-                            string[] tokens = line.Split(splitKeyValue); // Uses the splitKeyValue from the config.xml
-
-                            if (tokens[0].Contains("timestamp"))
-                            {
-                                if (dictText != null)
-                                {
-                                    inputListData.Add(dictText);
-                                }
-                                dictText = new Dictionary<string, string>();
-                            }
-                            dictText.Add(tokens[0], tokens[1]);
-                        }
-                        if (dictText != null)
-                        {
-                            inputListData.Add(dictText);
-                        }
-                    }
-                    break;
-
-                default:
-                    {
-                        Console.WriteLine("The inputFormat is not a recognized one, please check the config.xml!");
-                    }
-                    break;
+                string content = File.ReadAllText(inputPathDirectory + "\\" + inputFile);
+                rows = content.Split(splitVariables);
+            }
+            else // separatedRows
+            {
+                rows = File.ReadAllLines(inputPathDirectory + "\\" + inputFile);
 
             }
-            return inputListData;
+            foreach (var row in rows)
+            {
+                string[] tokens = row.Split(splitKeyValue);
+                if (tokens[0].ToUpper() == firstValue)
+                {
+                    measurements = new Measurements();
+                }                    
+
+                StoreMeasurements(tokens[0], tokens[1]);
+
+                if (tokens[0].ToUpper() == lastValue)
+                {
+                    measurementsList.Add(measurements);
+                }                    
+            }
+            return measurementsList;
         }
+
+        private static void StoreMeasurements(string key, string value)
+        {
+            switch (key.ToUpper())
+            {
+                case "TIMESTAMP":
+                    measurements.TimeStamp = Convert.ToDateTime(value);
+                    break;
+                case "MACHINETYPE":
+                    measurements.MachineType = value;
+                    break;
+                case "PART":
+                    measurements.Part = value;
+                    break;
+                case "VALUEKIND":
+                    measurements.ValueKind = value;
+                    break;
+                case "VALUE":
+                    measurements.Value = Convert.ToDouble(value);
+                    break;
+                default:
+                    break;
+            }            
+        }
+
     }
 }
