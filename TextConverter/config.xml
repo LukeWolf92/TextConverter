@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<config>
+  <input>
+    <inputType>xml</inputType> <!-- txt/xml-->
+    <inputPathDirectory>C:\TextConverter\Input</inputPathDirectory>
+    <inputFile>keyXmlExample.xml</inputFile>
+    <inputFormat>separatedLines</inputFormat> <!-- separatedLines/singleLine IRRELEVANT FOR XML-->
+    <splitKeyValue>=</splitKeyValue> <!-- The char that separate key from value IRRELEVANT FOR XML-->
+    <splitVariables>,</splitVariables> <!-- The string that separate each variable IRRELEVANT FOR XML -->
+    <firstXmlValue>TimeStamp</firstXmlValue>
+    <lastXmlValue>Value</lastXmlValue>
+  </input>
+  <output>
+    <outputPathDirectory>C:\TextConverter\Output</outputPathDirectory>
+    <outputFile>output</outputFile>
+    <outputType>JSON</outputType>
+  </output>
+  <settings>
+    <runningOs>Windows</runningOs> <!-- Windows/Linux -->
+    <refreshTime>5000</refreshTime> <!-- Time interval (ms) between input reads -->
+  </settings>
+</config>
