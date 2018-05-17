@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<input>
+	<test>
+		<TimeStamp>06/10/11 15:24:16</TimeStamp>
+		<MachineType>Delta 4</MachineType>
+		<Part>SENSOR</Part>
+		<ValueKind>TEMPERATURE</ValueKind>
+		<Value>67</Value>
+	</test>
+		<test>
+		<TimeStamp>06/10/11 15:39:36</TimeStamp>
+		<MachineType>Delta 4</MachineType>
+		<Part>SENSOR</Part>
+		<ValueKind>TEMPERATURE</ValueKind>
+		<Value>73</Value>
+	</test>
+		<test>
+		<TimeStamp>06/10/11 15:50:54</TimeStamp>
+		<MachineType>Delta 4</MachineType>
+		<Part>SENSOR</Part>
+		<ValueKind>TEMPERATURE</ValueKind>
+		<Value>78</Value>
+	</test>
+</input>

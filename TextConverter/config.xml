@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <config>
   <input>
-    <inputPathDirectory>C:\TextConverter\Input</inputPathDirectory>
+    <inputPathDirectory>C:\Progetti\TextConverter\Input</inputPathDirectory>
     <inputFile>keyXmlExample.xml</inputFile>
     <inputFormat>separatedRows</inputFormat> <!-- separatedRows/singleLine IRRELEVANT FOR XML-->
     <splitKeyValue>=</splitKeyValue> <!-- The char that separate key from value IRRELEVANT FOR XML-->
@@ -10,7 +10,7 @@
     <lastValue>Value</lastValue>
   </input>
   <output>
-    <outputPathDirectory>C:\TextConverter\Output</outputPathDirectory>
+    <outputPathDirectory>C:\Progetti\TextConverter\Output</outputPathDirectory>
     <outputFile>output</outputFile>
     <outputType>JSON</outputType>
   </output>

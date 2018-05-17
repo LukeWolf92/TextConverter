@@ -1,0 +1,1 @@
+TimeStamp=06/10/11 15:24:16,MachineType=Delta 4,Part=SENSOR,ValueKind=TEMPERATURE,Value=67,timestamp=06/10/11 15:39:36,MachineType=Delta 4,Part=SENSOR,ValueKind=TEMPERATURE,Value=73,timestamp=06/10/11 15:50:54,MachineType=Delta 4,Part=SENSOR,ValueKind=TEMPERATURE,Value=78
