@@ -5,10 +5,10 @@ namespace TextConverter
 {
     class Program
     {
-        private static readonly utilsXML handleXML = new utilsXML();
-        private static readonly utilsText handleText = new utilsText();
         public static Dictionary<string, string> configXML;
-        private static Measurements measurements = new Measurements();
+
+        private static readonly utilsXML handleXML = new utilsXML();
+        private static readonly utilsText handleText = new utilsText();        
         private static List<Measurements> inputData = new List<Measurements>();
         private static string[] fileName;
         private static string fileFormat;

@@ -31,7 +31,9 @@ namespace TextConverter
                             {
                                 measurements = new Measurements();
                             }
-                            StoreMeasurements(key_dict, reader.Value);                            
+
+                            Measurements.StoreMeasurements(key_dict, reader.Value, measurements);
+                             
                             if (key_dict == lastValue)
                             {
                                 measurementsList.Add(measurements);
@@ -66,30 +68,6 @@ namespace TextConverter
                 }
             }            
             return dictXML;
-        }
-
-        private static void StoreMeasurements(string key, string value)
-        {
-            switch (key.ToUpper())
-            {
-                case "TIMESTAMP":
-                    measurements.TimeStamp = Convert.ToDateTime(value);
-                    break;
-                case "MACHINETYPE":
-                    measurements.MachineType = value;
-                    break;
-                case "PART":
-                    measurements.Part = value;
-                    break;
-                case "VALUEKIND":
-                    measurements.ValueKind = value;
-                    break;
-                case "VALUE":
-                    measurements.Value = Convert.ToDouble(value);
-                    break;
-                default:
-                    break;
-            }
         }
     }
 }

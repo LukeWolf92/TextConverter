@@ -92,5 +92,58 @@ namespace TextConverter
         /// </summary>
         public bool StoreMeasure { get; set; }
 
+        public static Measurements StoreMeasurements(string key, string value, Measurements measurements)
+        {
+            switch (key.ToUpper())
+            {
+                case "TIMESTAMP":
+                    measurements.TimeStamp = Convert.ToDateTime(value);
+                    break;
+                case "MACHINETYPE":
+                    measurements.MachineType = value;
+                    break;
+                case "MACHINEMODEL":
+                    measurements.MachineModel = value;
+                    break;
+                case "MACHINENUMBER":
+                    measurements.MachineNumber = Convert.ToInt32(value);
+                    break;
+                case "PART":
+                    measurements.Part = value;
+                    break;
+                case "PARTNUMBER":
+                    measurements.PartNumber = Convert.ToInt32(value);
+                    break;
+                case "VALUEKIND":
+                    measurements.ValueKind = value;
+                    break;
+                case "TEXTVALUE":
+                    measurements.TextValue = value;
+                    break;
+                case "VALUE":
+                    measurements.Value = Convert.ToDouble(value);
+                    break;
+                case "ROUNDTIMESTAMP":
+                    measurements.RoundTimeStamp = Convert.ToBoolean(value);
+                    break;
+                case "REPLACEUTCTIME":
+                    measurements.ReplaceUtcTime = Convert.ToBoolean(value);
+                    break;
+                case "FORWARDMEASURE":
+                    measurements.ForwardMeasure = Convert.ToBoolean(value);
+                    break;
+                case "STOREMEASURE":
+                    measurements.StoreMeasure = Convert.ToBoolean(value);
+                    break;
+                case "READCLOCK":
+                    measurements.ReadClock = Convert.ToInt32(value);
+                    break;
+                default:
+                    Console.WriteLine("Couldn't recognize key: " + key);
+                    break;
+            }
+            return measurements;
+        }
     }
+
 }
