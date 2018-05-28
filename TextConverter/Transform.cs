@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using Newtonsoft.Json;
 using System.IO;
 
@@ -14,7 +13,7 @@ namespace TextConverter
         public void Start( Settings settings, string MqttCfg )
         {            
             List<Measurements> measurementsList = new List<Measurements>();
-
+            
             while (true)
             {
                 Console.WriteLine("Reading from input");
@@ -62,14 +61,14 @@ namespace TextConverter
                 try
                 {
                     /*********************************************
-                     *       FARE PARTE DI SCRITTURA JSON        *
+                     *                                           *
+                     *            SCRITTURA IN JSON              *
                      *                                           *
                      *********************************************/
-
                     string json = JsonConvert.SerializeObject(measurementsList);
                     File.WriteAllText(Directory.GetCurrentDirectory() + "\\Output\\output.json", json);
-
-
+                    MqttPublisher mqttPublisher = new MqttPublisher();
+                    mqttPublisher.Publish(json, settings);
                 }
                 catch (Exception ex2)
                 {

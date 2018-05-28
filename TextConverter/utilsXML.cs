@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Xml;
-using System;
 
 namespace TextConverter
 {
@@ -13,7 +12,7 @@ namespace TextConverter
         {            
             string key_dict = "";
 
-            XmlTextReader reader = new XmlTextReader(settings.pathToXML + "\\" + settings.fileName);
+            XmlTextReader reader = new XmlTextReader(settings.inputPathDirectory + "\\" + settings.inputFile);
             while (reader.Read())
             {
                 switch (reader.NodeType)

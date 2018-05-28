@@ -8,7 +8,7 @@ using uPLibrary.Networking.M2Mqtt.Messages;
 
 namespace TextConverter
 {       
-    class Mqtt
+    class MqttSubscriber
     {
         public string MqttCfg = "";
         public void Client_MqttMsgPublishReceived(object sender, MqttMsgPublishEventArgs e)
@@ -20,7 +20,7 @@ namespace TextConverter
         public void Subscribe( Settings settings )
         {                                    
             // create client instance
-            MqttClient client = new MqttClient( settings.MqttIpAddress);
+            MqttClient client = new MqttClient( settings.MqttIpAddressSubscribe);
 
             // register to message received
             client.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;            
@@ -29,7 +29,7 @@ namespace TextConverter
             client.Connect(clientId);
 
             // subscribe to the topic "software_config/YUMI_SERVER" with QoS 2
-            client.Subscribe(new string[] { settings.MqttTopic }, new byte[] { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE });            
+            client.Subscribe(new string[] { settings.MqttTopicSubscribe }, new byte[] { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE });            
         }
     }
 }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Collections.Generic;
-using Newtonsoft.Json;
-
+﻿
 namespace TextConverter
 {
     class Program
@@ -11,12 +7,12 @@ namespace TextConverter
         {
             Settings settings = new Settings(); // initialize settings from config.xml
             
-            Mqtt mqtt = new Mqtt();
-            mqtt.Subscribe(settings);            
+            MqttSubscriber mqttSubscriber = new MqttSubscriber();
+            mqttSubscriber.Subscribe(settings);            
             System.Threading.Thread.Sleep(1000); // wait for event "Client_MqttMsgPublishReceived"
 
             Transform transform = new Transform();
-            transform.Start(settings, mqtt.MqttCfg);
+            transform.Start(settings, mqttSubscriber.MqttCfg);
         }       
     }    
 }

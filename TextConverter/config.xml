@@ -11,12 +11,12 @@
   </input>
   <output>
     <outputPathDirectory>C:\Progetti\TextConverter\TextConverter\bin\Debug\netcoreapp2.0\Output</outputPathDirectory>
-    <outputFile>output</outputFile>
-    <outputType>JSON</outputType>
   </output>
   <settings>
-    <MqttTopic>software_config/YUMI_SERVER</MqttTopic>
-    <MqttIpAddress>127.0.0.1</MqttIpAddress>
+    <MqttTopicSubscribe>software_config/YUMI_SERVER</MqttTopicSubscribe>
+    <MqttIpAddressSubscribe>127.0.0.1</MqttIpAddressSubscribe>
+    <MqttTopicPublish>prova/luke</MqttTopicPublish>
+    <MqttIpAddressPublish>127.0.0.1</MqttIpAddressPublish>
     <refreshTime>5000</refreshTime> <!-- Time interval (ms) between input reads -->
   </settings>
 </config>
