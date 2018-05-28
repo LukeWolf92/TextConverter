@@ -1,35 +1,44 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace TextConverter
 {
     class Program
     {
-        public static Dictionary<string, string> configXML;
-
+        public static Dictionary<string, string> configXML;        
         private static readonly utilsXML handleXML = new utilsXML();
-        private static readonly utilsText handleText = new utilsText();    
+        private static readonly utilsText handleText = new utilsText();
+        private static readonly Mqtt mqtt = new Mqtt();
+        private static readonly string currentDirectory = System.IO.Directory.GetCurrentDirectory();
         private static string[] fileName;
         private static string fileFormat;
-        private static int refreshTime;
+        private static string outputPath;
+        private static int refreshTime;        
 
         public static void Initializer()
-        {
-            configXML = handleXML.readFromXML("config.xml", System.IO.Directory.GetCurrentDirectory());
+        {                        
+            configXML = handleXML.readFromXML("config.xml", currentDirectory);
             refreshTime = Convert.ToInt16(configXML["refreshTime"]);
             fileName = configXML["inputFile"].Split('.');
             fileFormat = fileName[fileName.GetLength(0) - 1].ToUpper();
-        }
+            outputPath = configXML["outputPathDirectory"];
+        }    
 
         static void Main(string[] args)
         {                       
-            Console.WriteLine("------------------TEXT CONVERTER PROGRAM----------------");
-            // INITIALIZER
             Initializer();
             List<Measurements> measurementsList = new List<Measurements>();
 
+            // MQTT Subscribe
+            mqtt.SubscribeAndReceiveMsg();
+            // wait for event "Client_MqttMsgPublishReceived"
+            System.Threading.Thread.Sleep(2000); 
             while ( true )
-            {
+            {                
+                
+
                 Console.WriteLine("Reading from input");
                 measurementsList = readingFromInput();
                 Console.WriteLine("Writing into output");
@@ -44,8 +53,7 @@ namespace TextConverter
         // --------------------- RETRIEVING DATA FROM INPUT ---------------------
         private static List<Measurements> readingFromInput()
         {
-            List<Measurements> measurementsList = new List<Measurements>();
-            
+            List<Measurements> measurementsList = new List<Measurements>();            
             try
             {
                 measurementsList = new List<Measurements>();
@@ -73,9 +81,23 @@ namespace TextConverter
             
             if (measurementsList.Capacity != 0)
             {
-                /* ------------------------------------------*
-                 *      FARE PARTE DI SCRITTURA OUTPUT       *
-                 *-------------------------------------------*/
+                try
+                {
+                    /*********************************************
+                     *       FARE PARTE DI SCRITTURA JSON        *
+                     *                                           *
+                     *********************************************/
+
+                    string json = JsonConvert.SerializeObject(measurementsList);                    
+                    File.WriteAllText(currentDirectory + "\\Output\\output.json", json);                    
+                    
+
+                }
+                catch (Exception ex2)
+                {
+                    Console.WriteLine("ERROR: Failed to generate output file:\n" + ex2);
+                    throw;
+                }
             }
             else
             {

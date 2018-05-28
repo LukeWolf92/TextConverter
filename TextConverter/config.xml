@@ -15,7 +15,8 @@
     <outputType>JSON</outputType>
   </output>
   <settings>
-    <runningOs>Windows</runningOs> <!-- Windows/Linux -->
+    <MqttTopic>software_config/YUMI_SERVER</MqttTopic>
+    <MqttIpAddress>127.0.0.1</MqttIpAddress>
     <refreshTime>5000</refreshTime> <!-- Time interval (ms) between input reads -->
   </settings>
 </config>
