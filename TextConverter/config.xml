@@ -2,15 +2,15 @@
 <config>
   <input>
     <inputPathDirectory>C:\Progetti\TextConverter\Input</inputPathDirectory>
-    <inputFile>keyXmlExample.xml</inputFile>
-    <inputFormat>separatedRows</inputFormat> <!-- separatedRows/singleLine IRRELEVANT FOR XML-->
+    <inputFile>singleLineExample.txt</inputFile>
+    <inputFormat>singleLine</inputFormat> <!-- separatedRows/singleLine IRRELEVANT FOR XML-->
     <splitKeyValue>=</splitKeyValue> <!-- The char that separate key from value IRRELEVANT FOR XML-->
     <splitVariables>,</splitVariables> <!-- The string that separate each variable IRRELEVANT FOR XML -->
     <firstValue>TimeStamp</firstValue>
     <lastValue>Value</lastValue>
   </input>
   <output>
-    <outputPathDirectory>C:\Progetti\TextConverter\Output</outputPathDirectory>
+    <outputPathDirectory>C:\Progetti\TextConverter\TextConverter\bin\Debug\netcoreapp2.0\Output</outputPathDirectory>
     <outputFile>output</outputFile>
     <outputType>JSON</outputType>
   </output>

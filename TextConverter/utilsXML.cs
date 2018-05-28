@@ -4,20 +4,16 @@ using System;
 
 namespace TextConverter
 {
-    class utilsXML
+    class UtilsXML
     {
         private static Measurements measurements = new Measurements();
         private static List<Measurements> measurementsList = new List<Measurements>();
         // USING FILE AND PATH FETCHED FROM CONFIG.XML
-        public List<Measurements> readFromXML()
+        public List<Measurements> readFromXML( Settings settings )
         {            
-            string fileName = Program.configXML["inputFile"];
-            string pathToXML = Program.configXML["inputPathDirectory"];
-            string firstValue = Program.configXML["firstValue"];
-            string lastValue = Program.configXML["lastValue"];
             string key_dict = "";
 
-            XmlTextReader reader = new XmlTextReader(pathToXML + "\\" + fileName);
+            XmlTextReader reader = new XmlTextReader(settings.pathToXML + "\\" + settings.fileName);
             while (reader.Read())
             {
                 switch (reader.NodeType)
@@ -27,14 +23,14 @@ namespace TextConverter
                         break;
                     case XmlNodeType.Text:            //Display the text in each element.     
                         {
-                            if (key_dict == firstValue)
+                            if (key_dict.ToUpper() == settings.firstValue)
                             {
                                 measurements = new Measurements();
                             }
 
                             Measurements.StoreMeasurements(key_dict, reader.Value, measurements);
                              
-                            if (key_dict == lastValue)
+                            if (key_dict.ToUpper() == settings.lastValue)
                             {
                                 measurementsList.Add(measurements);
                             }

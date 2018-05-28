@@ -10,21 +10,17 @@ namespace TextConverter
 {       
     class Mqtt
     {
-        private string MqttTopic = Program.configXML["MqttTopic"];
-        private string MqttIpAddress = Program.configXML["MqttIpAddress"];
-        public static string message = "";
-
+        public string MqttCfg = "";
         public void Client_MqttMsgPublishReceived(object sender, MqttMsgPublishEventArgs e)
         {
             // convert Byte[] into a readable string
-            string content = System.Text.Encoding.Default.GetString(e.Message);
-            Console.WriteLine(content);            
+            MqttCfg = System.Text.Encoding.Default.GetString(e.Message);                       
         }
 
-        public void SubscribeAndReceiveMsg()
+        public void Subscribe( Settings settings )
         {                                    
             // create client instance
-            MqttClient client = new MqttClient(MqttIpAddress);
+            MqttClient client = new MqttClient( settings.MqttIpAddress);
 
             // register to message received
             client.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;            
@@ -33,10 +29,7 @@ namespace TextConverter
             client.Connect(clientId);
 
             // subscribe to the topic "software_config/YUMI_SERVER" with QoS 2
-            client.Subscribe(new string[] { MqttTopic }, new byte[] { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE });
-            
+            client.Subscribe(new string[] { settings.MqttTopic }, new byte[] { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE });            
         }
-
-
     }
 }
