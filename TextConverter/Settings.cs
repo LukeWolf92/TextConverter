@@ -18,6 +18,7 @@ namespace TextConverter
         public readonly string splitVariables;
         public readonly string firstValue;
         public readonly string lastValue;
+        public readonly string timeStampName;
 
         // output
         public readonly string outputPathDirectory;
@@ -47,6 +48,7 @@ namespace TextConverter
             splitVariables = configXML["splitVariables"];
             firstValue = configXML["firstValue"].ToUpper();
             lastValue = configXML["lastValue"].ToUpper();
+            timeStampName = configXML["timeStampName"].ToUpper();
 
             // output
             outputPathDirectory = configXML["outputPathDirectory"];

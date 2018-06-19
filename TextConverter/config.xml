@@ -8,6 +8,7 @@
     <splitVariables>,</splitVariables> <!-- The string that separate each variable IRRELEVANT FOR XML -->
     <firstValue>TimeStamp</firstValue>
     <lastValue>Value</lastValue>
+    <timeStampName>DATA:</timeStampName>
   </input>
   <output>
     <outputPathDirectory>C:\Progetti\TextConverter\TextConverter\bin\Debug\netcoreapp2.0\Output</outputPathDirectory>

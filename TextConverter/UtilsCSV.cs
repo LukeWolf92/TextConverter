@@ -15,53 +15,47 @@ namespace TextConverter
             using (var reader = new StreamReader(settings.inputPathDirectory + "/" + settings.inputFile ))
             {
                 List<string[]> list = new List<string[]>();                
-                string[] variables = reader.ReadLine().Split(',');
+                string[] variableNames = reader.ReadLine().Split(',');
                 string[] values;
-                string line = "";
-                string timeStamp =""; // stored to be added into each measurements, at the end of the lecture
+                string excelRow = "";
+                string tempTimeStamp =""; // stores and add the timestamp of each row, at the end of the every "ReadLine()"
                 int k = 0;
 
                 while (!reader.EndOfStream)
                 {
-                    line = reader.ReadLine();
-                    if ( line != "" ) 
+                    excelRow = reader.ReadLine();
+                    if ( excelRow != "" ) 
                     {
-                        values = line.Split(',');                                                
-                        for (int i=0; i<variables.Length; i++)
+                        values = excelRow.Split(',');                                                
+                        for (int i=0; i<variableNames.Length; i++)
                         {
                             measurements = new Measurements();
-                            if ( variables[i] != "") // jump over when it reaches the end of the excel row
+                            if ( variableNames[i] != "") // skip to next "," when content is empty
                             {
-                                if (variables[i] == "DATA:") // DATA: e ORA:
+                                if (variableNames[i].ToUpper() == settings.timeStampName) // DATA: e ORA:
                                 {
-                                    timeStamp = values[i] + " " + values[i + 1]; 
+                                    tempTimeStamp = values[i] + " " + values[i + 1]; 
                                     i++;
                                 }
-                                else if (i < 8)
+                                else
                                 {
-                                    if (variables[i] == "PEZZI FATTI:")
+                                    measurements.ValueKind = variableNames[i];
+                                    try // if VALUE can be a NUMBER
                                     {
-                                        measurements.ValueKind = variables[i];
                                         measurements.Value = Convert.ToDouble(values[i]);
                                     }
-                                    else
+                                    catch // otherwise IT MUST BE a STRING
                                     {
-                                        measurements.ValueKind = variables[i];
                                         measurements.TextValue = values[i];
                                     }
                                     measurementsList.Add(measurements);
                                 }
-                                else
-                                {
-                                    measurements.ValueKind = variables[i];
-                                    measurements.Value = Convert.ToDouble(values[i]);
-                                    measurementsList.Add(measurements);
-                                }
                             }
                         }
+                        // at the end of each row, it adds the stored timestamp for the report
                         for ( k = k; k<measurementsList.Count; k++ )
                         {
-                            measurementsList[k].TimeStamp = Convert.ToDateTime(timeStamp);
+                            measurementsList[k].TimeStamp = Convert.ToDateTime(tempTimeStamp);
                         }                        
                     }                    
                 }
