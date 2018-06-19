@@ -9,6 +9,7 @@ namespace TextConverter
     {
         private static readonly UtilsXML handleXML = new UtilsXML();
         private static readonly UtilsText handleText = new UtilsText();
+        private static readonly UtilsCSV handleCSV = new UtilsCSV();
 
         public void Start( Settings settings, string MqttCfg )
         {            
@@ -30,18 +31,22 @@ namespace TextConverter
         // --------------------- RETRIEVING DATA FROM INPUT ---------------------
         private static List<Measurements> readingFromInput(Settings settings)
         {
-            List<Measurements> measurementsList = new List<Measurements>();
+            List<Measurements> measurementsList = new List<Measurements>();            
             try
             {
                 measurementsList = new List<Measurements>();
 
-                if (settings.fileFormat == "TXT")
+                if (settings.fileFormat == "TXT") 
                 {
                     measurementsList = handleText.readFromTXT(settings);
                 }
                 else if (settings.fileFormat == "XML")
                 {
                     measurementsList = handleXML.readFromXML(settings);
+                }
+                else if (settings.fileFormat == "CSV")
+                {
+                    measurementsList = handleCSV.readFromCSV(settings);
                 }
             }
             catch (Exception ex1)

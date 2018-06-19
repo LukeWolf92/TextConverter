@@ -1,8 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <config>
   <input>
     <inputPathDirectory>C:\Progetti\TextConverter\Input</inputPathDirectory>
-    <inputFile>singleLineExample.txt</inputFile>
+    <inputFile>201806_M166.csv</inputFile>
     <inputFormat>singleLine</inputFormat> <!-- separatedRows/singleLine IRRELEVANT FOR XML-->
     <splitKeyValue>=</splitKeyValue> <!-- The char that separate key from value IRRELEVANT FOR XML-->
     <splitVariables>,</splitVariables> <!-- The string that separate each variable IRRELEVANT FOR XML -->
