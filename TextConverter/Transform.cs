@@ -11,14 +11,14 @@ namespace TextConverter
         private static readonly UtilsText handleText = new UtilsText();
         private static readonly UtilsCSV handleCSV = new UtilsCSV();
 
-        public void Start( Settings settings, string MqttCfg )
-        {            
+        public void Start(Settings settings, MqttCfgSettings mqttCfgSettings)
+        {
             List<Measurements> measurementsList = new List<Measurements>();
-            
+
             while (true)
             {
                 Console.WriteLine("Reading from input");
-                measurementsList = readingFromInput(settings);
+                measurementsList = readingFromInput(settings, mqttCfgSettings);
                 Console.WriteLine("Writing into output");
                 writingIntoOutput(settings, measurementsList);
                 Console.WriteLine("Delay for refresh: " + settings.refreshTime / 1000 + "seconds");
@@ -29,7 +29,7 @@ namespace TextConverter
         }
 
         // --------------------- RETRIEVING DATA FROM INPUT ---------------------
-        private static List<Measurements> readingFromInput(Settings settings)
+        private static List<Measurements> readingFromInput(Settings settings, MqttCfgSettings mqttCfgSettings)
         {
             List<Measurements> measurementsList = new List<Measurements>();            
             try
@@ -54,6 +54,18 @@ namespace TextConverter
                 Console.WriteLine("ERROR: Failed to read from input:\n" + ex1);
                 throw;
             }
+            measurementsList = InsertMachineDataFromMqttCfg(measurementsList, mqttCfgSettings);
+            return measurementsList;
+        }
+
+        // DA FAREEEEEEEEEEEE
+        private static List<Measurements> InsertMachineDataFromMqttCfg ( List<Measurements> measurementsList, MqttCfgSettings mqttCfgSettings )
+        {
+            //-----------------------------------------------------
+            //-----------------------------------------------------
+            //-----------------------------------------------------
+            //-----------------------------------------------------
+
             return measurementsList;
         }
 

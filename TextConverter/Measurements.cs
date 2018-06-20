@@ -88,7 +88,7 @@ namespace TextConverter
         public bool ForwardMeasure { get; set; }
 
         /// <summary>
-        /// This value tells to the IbNet agent to store the value.
+        /// This value tells to the agent to store the value.
         /// </summary>
         public bool StoreMeasure { get; set; }
 

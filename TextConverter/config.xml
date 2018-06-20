@@ -8,13 +8,13 @@
     <splitVariables>,</splitVariables> <!-- The string that separate each variable IRRELEVANT FOR XML -->
     <firstValue>TimeStamp</firstValue>
     <lastValue>Value</lastValue>
-    <timeStampName>DATA:</timeStampName>
+    <timeStampName>DATA:</timeStampName> <!-- This is the name used in the CSV -->
   </input>
   <output>
     <outputPathDirectory>C:\Progetti\TextConverter\TextConverter\bin\Debug\netcoreapp2.0\Output</outputPathDirectory>
   </output>
   <settings>
-    <MqttTopicSubscribe>software_config/YUMI_SERVER</MqttTopicSubscribe>
+    <MqttTopicSubscribe>software_config/TWINS_M166</MqttTopicSubscribe>
     <MqttIpAddressSubscribe>127.0.0.1</MqttIpAddressSubscribe>
     <MqttTopicPublish>prova/luke</MqttTopicPublish>
     <MqttIpAddressPublish>127.0.0.1</MqttIpAddressPublish>

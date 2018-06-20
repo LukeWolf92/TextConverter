@@ -25,7 +25,7 @@ namespace TextConverter
                 {
                     excelRow = reader.ReadLine();
                     if ( excelRow != "" ) 
-                    {
+                    {                        
                         values = excelRow.Split(',');                                                
                         for (int i=0; i<variableNames.Length; i++)
                         {

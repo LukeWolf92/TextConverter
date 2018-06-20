@@ -28,7 +28,7 @@ namespace TextConverter
             string clientId = Guid.NewGuid().ToString();
             client.Connect(clientId);
 
-            // subscribe to the topic "software_config/YUMI_SERVER" with QoS 2
+            // subscribe to the topic "software_config/TWINS_M166" with QoS 2
             client.Subscribe(new string[] { settings.MqttTopicSubscribe }, new byte[] { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE });            
         }
     }
