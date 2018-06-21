@@ -17,7 +17,7 @@ namespace TextConverter
 
             while (true)
             {
-                Console.WriteLine("----------------------------------------------");
+                Console.WriteLine("-------------------------------------------------------------");
                 Console.WriteLine("Reading from input");
                 measurementsList = readingFromInput(settings, mqttCfgSettings);
                 Console.WriteLine("Adding info from Mqtt Cfg");
