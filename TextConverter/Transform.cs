@@ -17,6 +17,7 @@ namespace TextConverter
 
             while (true)
             {
+                Console.WriteLine("----------------------------------------------");
                 Console.WriteLine("Reading from input");
                 measurementsList = readingFromInput(settings, mqttCfgSettings);
                 Console.WriteLine("Adding info from Mqtt Cfg");
@@ -59,7 +60,10 @@ namespace TextConverter
             return measurementsList;
         }
 
-        // DA FAREEEEEEEEEEEE
+        /***********************************************
+         *          INSERIMENTO DATI DAL CFG           *
+         *                                             *
+         ***********************************************/
         private static List<Measurements> InsertMachineDataFromMqttCfg ( List<Measurements> measurementsList, MqttCfgSettingsOrganiser mqttCfgSettings )
         {
             foreach ( var measurements in measurementsList )
@@ -94,7 +98,7 @@ namespace TextConverter
                      *            SCRITTURA IN JSON              *
                      *                                           *
                      *********************************************/
-                    string json = JsonConvert.SerializeObject(measurementsList);
+        string json = JsonConvert.SerializeObject(measurementsList);
                     File.WriteAllText(Directory.GetCurrentDirectory() + "\\Output\\output.json", json);
                     MqttPublisher mqttPublisher = new MqttPublisher();
                     mqttPublisher.Publish(json, settings);
