@@ -11,7 +11,7 @@ namespace TextConverter
         private static readonly UtilsText handleText = new UtilsText();
         private static readonly UtilsCSV handleCSV = new UtilsCSV();
 
-        public void Start(Settings settings, MqttCfgSettings mqttCfgSettings)
+        public void Start(Settings settings, MqttCfgSettingsOrganiser mqttCfgSettings)
         {
             List<Measurements> measurementsList = new List<Measurements>();
 
@@ -19,6 +19,8 @@ namespace TextConverter
             {
                 Console.WriteLine("Reading from input");
                 measurementsList = readingFromInput(settings, mqttCfgSettings);
+                Console.WriteLine("Adding info from Mqtt Cfg");
+                measurementsList = InsertMachineDataFromMqttCfg(measurementsList, mqttCfgSettings);
                 Console.WriteLine("Writing into output");
                 writingIntoOutput(settings, measurementsList);
                 Console.WriteLine("Delay for refresh: " + settings.refreshTime / 1000 + "seconds");
@@ -29,7 +31,7 @@ namespace TextConverter
         }
 
         // --------------------- RETRIEVING DATA FROM INPUT ---------------------
-        private static List<Measurements> readingFromInput(Settings settings, MqttCfgSettings mqttCfgSettings)
+        private static List<Measurements> readingFromInput(Settings settings, MqttCfgSettingsOrganiser mqttCfgSettings)
         {
             List<Measurements> measurementsList = new List<Measurements>();            
             try
@@ -53,19 +55,29 @@ namespace TextConverter
             {
                 Console.WriteLine("ERROR: Failed to read from input:\n" + ex1);
                 throw;
-            }
-            measurementsList = InsertMachineDataFromMqttCfg(measurementsList, mqttCfgSettings);
+            }            
             return measurementsList;
         }
 
         // DA FAREEEEEEEEEEEE
-        private static List<Measurements> InsertMachineDataFromMqttCfg ( List<Measurements> measurementsList, MqttCfgSettings mqttCfgSettings )
+        private static List<Measurements> InsertMachineDataFromMqttCfg ( List<Measurements> measurementsList, MqttCfgSettingsOrganiser mqttCfgSettings )
         {
-            //-----------------------------------------------------
-            //-----------------------------------------------------
-            //-----------------------------------------------------
-            //-----------------------------------------------------
+            foreach ( var measurements in measurementsList )
+            {
+                measurements.ReplaceUtcTime = Convert.ToBoolean(mqttCfgSettings.MqttConfiguration["ReplaceUtcTime"]);
+                measurements.RoundTimeStamp = Convert.ToBoolean(mqttCfgSettings.MqttConfiguration["RoundTimeStamp"]);
+                measurements.ReadClock = Convert.ToInt16(mqttCfgSettings.MqttConfiguration["ReadClock"]);
 
+                measurements.ForwardMeasure = Convert.ToBoolean(mqttCfgSettings.MqttConfiguration["ForwardMeasure"]);
+                measurements.StoreMeasure = Convert.ToBoolean(mqttCfgSettings.MqttConfiguration["StoreMeasure"]);
+
+                measurements.Part = mqttCfgSettings.MqttConfiguration["Part"];
+                measurements.PartNumber = Convert.ToInt16(mqttCfgSettings.MqttConfiguration["PartNumber"]);
+
+                measurements.MachineNumber = Convert.ToInt16(mqttCfgSettings.MqttConfiguration["MachineNumber"]);
+                measurements.MachineType = mqttCfgSettings.MqttConfiguration["MachineType"];
+                measurements.MachineModel = mqttCfgSettings.MqttConfiguration["MachineModel"];
+            }
             return measurementsList;
         }
 

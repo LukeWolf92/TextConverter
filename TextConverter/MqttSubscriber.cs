@@ -14,7 +14,15 @@ namespace TextConverter
         public void Client_MqttMsgPublishReceived(object sender, MqttMsgPublishEventArgs e)
         {
             // convert Byte[] into a readable string
-            MqttCfg = System.Text.Encoding.Default.GetString(e.Message);                       
+            MqttCfg = System.Text.Encoding.Default.GetString(e.Message);
+            MqttCfg = CleanCfg(MqttCfg);
+        }
+
+        public string CleanCfg(string MqttCfg)
+        {
+
+            MqttCfg = MqttCfg.Replace("\"", "").Replace("[", "").Replace("]", "").Replace("{", "").Replace("}", "");
+            return MqttCfg;
         }
 
         public void Subscribe( Settings settings )

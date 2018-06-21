@@ -4,18 +4,32 @@ using System.Text;
 
 namespace TextConverter
 {
-    class MqttCfgSettings
+    class MqttCfgSettingsOrganiser
     {
-        //public readonly string MachineType;
-        //public readonly string MachineModel;
-        //public readonly string MachineNumber;
-        public readonly string[] MqttData;
+        public readonly Dictionary<string, string> MqttConfiguration = new Dictionary<string, string>();
 
         // -------------- CREATING A READABLE VARIABLE FROM MQTT-CFG ------------
-        public MqttCfgSettings(string MqttCfg)
-        {
-            //MqttCfg = MqttCfg.Replace(@"\","");            
-            MqttData = MqttCfg.Split(',');
+        public MqttCfgSettingsOrganiser(string MqttCfg)
+        {            
+            string[] MqttDataArray = MqttCfg.Split(',');
+            foreach (string word in MqttDataArray)
+            {
+                string[] tempArray = word.TrimStart().Split(": ");
+
+                for (int i=0; i<tempArray.Length;i++)
+                {
+                    // "Variables:"
+                    if (tempArray[i].Contains("Variables"))
+                    {
+                        // skip over...
+                    }
+                    else
+                    {
+                        MqttConfiguration.Add(tempArray[i], tempArray[i + 1]);
+                        i++;
+                    }
+                }
+            }
         }
     }
 }
