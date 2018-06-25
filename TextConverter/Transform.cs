@@ -11,7 +11,7 @@ namespace TextConverter
         private static readonly UtilsText handleText = new UtilsText();
         private static readonly UtilsCSV handleCSV = new UtilsCSV();
 
-        public void Start(Settings settings, MqttCfgSettingsOrganiser mqttCfgSettings)
+        public void Start(SettingsFromXML settingsFromXML, MqttCfgSettingsOrganiser mqttCfgSettings)
         {
             List<Measurements> measurementsList = new List<Measurements>();
 
@@ -19,37 +19,37 @@ namespace TextConverter
             {
                 Console.WriteLine("-------------------------------------------------------------");
                 Console.WriteLine("Reading from input");
-                measurementsList = readingFromInput(settings, mqttCfgSettings);
+                measurementsList = readingFromInput(settingsFromXML, mqttCfgSettings);
                 Console.WriteLine("Adding info from Mqtt Cfg");
                 measurementsList = InsertMachineDataFromMqttCfg(measurementsList, mqttCfgSettings);
                 Console.WriteLine("Writing into output");
-                writingIntoOutput(settings, measurementsList);
-                Console.WriteLine("Delay for refresh: " + settings.refreshTime / 1000 + "seconds");
-                System.Threading.Thread.Sleep(settings.refreshTime);
+                writingIntoOutput(measurementsList, mqttCfgSettings);
+                Console.WriteLine("Delay for refresh: " + mqttCfgSettings.RefreshTime / 1000 + "seconds");
+                System.Threading.Thread.Sleep(mqttCfgSettings.RefreshTime);
                 Console.WriteLine("Cleaning cache and starting a new cycle");
                 measurementsList.Clear();
             }
         }
 
         // --------------------- RETRIEVING DATA FROM INPUT ---------------------
-        private static List<Measurements> readingFromInput(Settings settings, MqttCfgSettingsOrganiser mqttCfgSettings)
+        private static List<Measurements> readingFromInput(SettingsFromXML settingsFromXML, MqttCfgSettingsOrganiser mqttCfgSettings)
         {
             List<Measurements> measurementsList = new List<Measurements>();            
             try
             {
                 measurementsList = new List<Measurements>();
 
-                if (settings.fileFormat == "TXT") 
+                if (mqttCfgSettings.InputFileFormat == "TXT") 
                 {
-                    measurementsList = handleText.readFromTXT(settings);
+                    measurementsList = handleText.readFromTXT(settingsFromXML, mqttCfgSettings);
                 }
-                else if (settings.fileFormat == "XML")
+                else if (mqttCfgSettings.InputFileFormat == "XML")
                 {
-                    measurementsList = handleXML.readFromXML(settings);
+                    measurementsList = handleXML.readFromXML(settingsFromXML, mqttCfgSettings);
                 }
-                else if (settings.fileFormat == "CSV")
+                else if (mqttCfgSettings.InputFileFormat == "CSV")
                 {
-                    measurementsList = handleCSV.readFromCSV(settings);
+                    measurementsList = handleCSV.readFromCSV(mqttCfgSettings);
                 }
             }
             catch (Exception ex1)
@@ -68,40 +68,35 @@ namespace TextConverter
         {
             foreach ( var measurements in measurementsList )
             {
-                measurements.ReplaceUtcTime = Convert.ToBoolean(mqttCfgSettings.MqttConfiguration["ReplaceUtcTime"]);
-                measurements.RoundTimeStamp = Convert.ToBoolean(mqttCfgSettings.MqttConfiguration["RoundTimeStamp"]);
-                measurements.ReadClock = Convert.ToInt16(mqttCfgSettings.MqttConfiguration["ReadClock"]);
+                measurements.ReplaceUtcTime = mqttCfgSettings.ReplaceUtcTime;
+                measurements.RoundTimeStamp = mqttCfgSettings.RoundTimeStamp;
+                measurements.ReadClock = mqttCfgSettings.ReadClock;
 
-                measurements.ForwardMeasure = Convert.ToBoolean(mqttCfgSettings.MqttConfiguration["ForwardMeasure"]);
-                measurements.StoreMeasure = Convert.ToBoolean(mqttCfgSettings.MqttConfiguration["StoreMeasure"]);
+                measurements.ForwardMeasure = mqttCfgSettings.ForwardMeasure;
+                measurements.StoreMeasure = mqttCfgSettings.StoreMeasure;
 
-                measurements.Part = mqttCfgSettings.MqttConfiguration["Part"];
-                measurements.PartNumber = Convert.ToInt16(mqttCfgSettings.MqttConfiguration["PartNumber"]);
+                measurements.Part = mqttCfgSettings.Part;
+                measurements.PartNumber = mqttCfgSettings.PartNumber;
 
-                measurements.MachineNumber = Convert.ToInt16(mqttCfgSettings.MqttConfiguration["MachineNumber"]);
-                measurements.MachineType = mqttCfgSettings.MqttConfiguration["MachineType"];
-                measurements.MachineModel = mqttCfgSettings.MqttConfiguration["MachineModel"];
+                measurements.MachineNumber = mqttCfgSettings.MachineNumber;
+                measurements.MachineType = mqttCfgSettings.MachineType;
+                measurements.MachineModel = mqttCfgSettings.MachineModel;
             }
             return measurementsList;
         }
 
         // --------------------- GENERATING OUTPUT FILE --------------------- //
-        private static void writingIntoOutput(Settings settings, List<Measurements> measurementsList)
+        private static void writingIntoOutput(List<Measurements> measurementsList, MqttCfgSettingsOrganiser mqttCfgSettings)
         {
 
             if (measurementsList.Capacity != 0)
             {
                 try
                 {
-                    /*********************************************
-                     *                                           *
-                     *            SCRITTURA IN JSON              *
-                     *                                           *
-                     *********************************************/
-        string json = JsonConvert.SerializeObject(measurementsList);
+                    string json = JsonConvert.SerializeObject(measurementsList);
                     File.WriteAllText(Directory.GetCurrentDirectory() + "\\Output\\output.json", json);
                     MqttPublisher mqttPublisher = new MqttPublisher();
-                    mqttPublisher.Publish(json, settings);
+                    mqttPublisher.Publish(json, mqttCfgSettings);
                 }
                 catch (Exception ex2)
                 {

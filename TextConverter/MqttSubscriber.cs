@@ -25,10 +25,10 @@ namespace TextConverter
             return MqttCfg;
         }
 
-        public void Subscribe( Settings settings )
+        public void Subscribe( SettingsFromXML settingsFromXML )
         {                                    
             // create client instance
-            MqttClient client = new MqttClient( settings.MqttIpAddressSubscribe);
+            MqttClient client = new MqttClient( settingsFromXML.MqttIpAddressSubscribe);
 
             // register to message received
             client.MqttMsgPublishReceived += Client_MqttMsgPublishReceived;            
@@ -37,7 +37,7 @@ namespace TextConverter
             client.Connect(clientId);
 
             // subscribe to the topic "software_config/TWINS_M166" with QoS 2
-            client.Subscribe(new string[] { settings.MqttTopicSubscribe }, new byte[] { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE });            
+            client.Subscribe(new string[] { settingsFromXML.MqttTopicSubscribe }, new byte[] { MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE });            
         }
     }
 }

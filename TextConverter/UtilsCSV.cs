@@ -10,9 +10,9 @@ namespace TextConverter
         private static Measurements measurements = new Measurements();
         private static List<Measurements> measurementsList = new List<Measurements>();
         private static List<List<Measurements>> listOfMeasurementsList = new List<List<Measurements>>();
-        public List<Measurements> readFromCSV( Settings settings )
+        public List<Measurements> readFromCSV(MqttCfgSettingsOrganiser mqttCfgSettings)
         {
-            using (var reader = new StreamReader(settings.inputPathDirectory + "/" + settings.inputFile ))
+            using (var reader = new StreamReader(mqttCfgSettings.InputPathDirectory + "/" + mqttCfgSettings.InputFile ))
             {
                 List<string[]> list = new List<string[]>();                
                 string[] variableNames = reader.ReadLine().Split(',');
@@ -32,7 +32,7 @@ namespace TextConverter
                             measurements = new Measurements();
                             if ( variableNames[i] != "") // skip to next "," when content is empty
                             {
-                                if (variableNames[i].ToUpper() == settings.timeStampName) // DATA: e ORA:
+                                if (variableNames[i].ToUpper() == mqttCfgSettings.TimeStampName) // DATA: e ORA:
                                 {
                                     tempTimeStamp = values[i] + " " + values[i + 1]; 
                                     i++;

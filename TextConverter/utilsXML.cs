@@ -8,11 +8,11 @@ namespace TextConverter
         private static Measurements measurements = new Measurements();
         private static List<Measurements> measurementsList = new List<Measurements>();
         // USING FILE AND PATH FETCHED FROM CONFIG.XML
-        public List<Measurements> readFromXML( Settings settings )
+        public List<Measurements> readFromXML( SettingsFromXML settingsFromXML, MqttCfgSettingsOrganiser mqttCfgSettings)
         {            
             string key_dict = "";
 
-            XmlTextReader reader = new XmlTextReader(settings.inputPathDirectory + "\\" + settings.inputFile);
+            XmlTextReader reader = new XmlTextReader(mqttCfgSettings.InputPathDirectory + "\\" + mqttCfgSettings.InputFile);
             while (reader.Read())
             {
                 switch (reader.NodeType)
@@ -22,14 +22,14 @@ namespace TextConverter
                         break;
                     case XmlNodeType.Text:            //Display the text in each element.     
                         {
-                            if (key_dict.ToUpper() == settings.firstValue)
+                            if (key_dict.ToUpper() == settingsFromXML.firstValue)
                             {
                                 measurements = new Measurements();
                             }
 
                             Measurements.StoreMeasurements(key_dict, reader.Value, measurements);
                              
-                            if (key_dict.ToUpper() == settings.lastValue)
+                            if (key_dict.ToUpper() == settingsFromXML.lastValue)
                             {
                                 measurementsList.Add(measurements);
                             }

@@ -8,15 +8,15 @@ namespace TextConverter
 {
     class MqttPublisher
     {
-        public void Publish( string message, Settings settings )
+        public void Publish( string message, MqttCfgSettingsOrganiser mqttCfgSettings )
         {
             // create client instance
-            MqttClient client = new MqttClient(settings.MqttIpAddressPublish);
+            MqttClient client = new MqttClient(mqttCfgSettings.MqttIpAddressTopicPublish);
 
             string clientId = Guid.NewGuid().ToString();
             client.Connect(clientId);
 
-            client.Publish(settings.MqttTopicPublish, Encoding.UTF8.GetBytes(message));
+            client.Publish(mqttCfgSettings.MqttTopicPublish, Encoding.UTF8.GetBytes(message));
 
         }
     }

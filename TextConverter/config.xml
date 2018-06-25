@@ -1,23 +1,17 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <config>
   <input>
-    <inputPathDirectory>C:\Progetti\TextConverter\Input</inputPathDirectory>
-    <inputFile>201806_M166.csv</inputFile>
     <inputFormat>singleLine</inputFormat> <!-- separatedRows/singleLine IRRELEVANT FOR XML-->
     <splitKeyValue>=</splitKeyValue> <!-- The char that separate key from value IRRELEVANT FOR XML-->
     <splitVariables>,</splitVariables> <!-- The string that separate each variable IRRELEVANT FOR XML -->
     <firstValue>TimeStamp</firstValue>
     <lastValue>Value</lastValue>
-    <timeStampName>DATA:</timeStampName> <!-- This is the name used in the CSV -->
   </input>
   <output>
     <outputPathDirectory>C:\Progetti\TextConverter\TextConverter\bin\Debug\netcoreapp2.0\Output</outputPathDirectory>
   </output>
-  <settings>
+  <Mqttsettings>
     <MqttTopicSubscribe>software_config/TWINS_M166</MqttTopicSubscribe>
     <MqttIpAddressSubscribe>127.0.0.1</MqttIpAddressSubscribe>
-    <MqttTopicPublish>prova/luke</MqttTopicPublish>
-    <MqttIpAddressPublish>127.0.0.1</MqttIpAddressPublish>
-    <refreshTime>5000</refreshTime> <!-- Time interval (ms) between input reads -->
-  </settings>
+  </Mqttsettings>
 </config>
