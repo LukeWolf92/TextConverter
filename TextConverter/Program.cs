@@ -16,9 +16,11 @@ namespace TextConverter
 
             Console.WriteLine("Storing Configuration from Topic");
             MqttCfgSettingsOrganiser mqttCfgSettings = new MqttCfgSettingsOrganiser(mqttSubscriber.MqttCfg);
-            
+
+            MqttPublisher mqttPublisher = new MqttPublisher(mqttCfgSettings);
+
             Transform transform = new Transform();
-            transform.Start(settingsFromXML, mqttCfgSettings);
+            transform.Start(settingsFromXML, mqttCfgSettings, mqttPublisher);
         }       
     }    
 }

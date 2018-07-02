@@ -11,7 +11,7 @@ namespace TextConverter
         private static readonly UtilsText handleText = new UtilsText();
         private static readonly UtilsCSV handleCSV = new UtilsCSV();
 
-        public void Start(SettingsFromXML settingsFromXML, MqttCfgSettingsOrganiser mqttCfgSettings)
+        public void Start(SettingsFromXML settingsFromXML, MqttCfgSettingsOrganiser mqttCfgSettings, MqttPublisher mqttPublisher)
         {
             List<Measurements> measurementsList = new List<Measurements>();
 
@@ -20,10 +20,10 @@ namespace TextConverter
                 Console.WriteLine("-------------------------------------------------------------");
                 Console.WriteLine("Reading from input");
                 measurementsList = readingFromInput(settingsFromXML, mqttCfgSettings);
-                Console.WriteLine("Adding info from Mqtt Cfg");
+                Console.WriteLine("Adding info from MQTT Cfg");
                 measurementsList = InsertMachineDataFromMqttCfg(measurementsList, mqttCfgSettings);
-                Console.WriteLine("Writing into output");
-                writingIntoOutput(measurementsList, mqttCfgSettings);
+                Console.WriteLine("Publishing to MQTT topic");
+                writingIntoOutput(measurementsList, mqttCfgSettings, mqttPublisher);
                 Console.WriteLine("Delay for refresh: " + mqttCfgSettings.RefreshTime / 1000 + "seconds");
                 System.Threading.Thread.Sleep(mqttCfgSettings.RefreshTime);
                 Console.WriteLine("Cleaning cache and starting a new cycle");
@@ -86,17 +86,19 @@ namespace TextConverter
         }
 
         // --------------------- GENERATING OUTPUT FILE --------------------- //
-        private static void writingIntoOutput(List<Measurements> measurementsList, MqttCfgSettingsOrganiser mqttCfgSettings)
+        private static void writingIntoOutput(List<Measurements> measurementsList, MqttCfgSettingsOrganiser mqttCfgSettings, MqttPublisher mqttPublisher)
         {
-
             if (measurementsList.Capacity != 0)
             {
                 try
-                {
-                    string json = JsonConvert.SerializeObject(measurementsList);
-                    File.WriteAllText(Directory.GetCurrentDirectory() + "\\Output\\output.json", json);
-                    MqttPublisher mqttPublisher = new MqttPublisher();
-                    mqttPublisher.Publish(json, mqttCfgSettings);
+                {                    
+                    File.WriteAllText(Directory.GetCurrentDirectory() + "\\Output\\output.json", JsonConvert.SerializeObject(measurementsList));
+                    foreach (var measure in measurementsList)
+                    {
+                        string json = JsonConvert.SerializeObject(measure);
+                        mqttPublisher.Publish(json, mqttCfgSettings);
+                        //System.Threading.Thread.Sleep(100);
+                    }
                 }
                 catch (Exception ex2)
                 {
