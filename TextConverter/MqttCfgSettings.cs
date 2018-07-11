@@ -17,7 +17,7 @@ namespace TextConverter
         public readonly string InputFile;
         public readonly string InputFileFormat;
         public readonly string TimeStampName;
-        public readonly int RefreshTime;
+        public readonly int Cycle;
 
         // Variable parameters
         public readonly bool ForwardMeasure;
@@ -30,6 +30,13 @@ namespace TextConverter
         public readonly bool ReplaceUtcTime;
         public readonly bool RoundTimeStamp;
         public readonly bool StoreMeasure;
+
+        // PostgreSQL DB information
+        public readonly string DbServer;
+        public readonly string DbUser;
+        public readonly string DbPort;
+        public readonly string DbPassword;
+        public readonly string DbName;
 
         // -------------- CREATING A READABLE VARIABLE FROM MQTT-CFG ------------
         public MqttCfgSettingsOrganiser(string MqttCfg)
@@ -55,34 +62,47 @@ namespace TextConverter
                     }
                 }
             }
+            try
+            {
+                ConfigurationTopic = MqttCfgDict["ConfigurationTopic"];
+                Agent = MqttCfgDict["Agent"];
+                ServerUrl = MqttCfgDict["ServerUrl"];
+                MqttTopic = MqttCfgDict["MqttTopic"];
+                MqttTopicPublish = MqttCfgDict["MqttTopicPublish"];
+                MqttIpAddressTopicPublish = MqttCfgDict["MqttIpAddressTopicPublish"];
+                GenerateFakeData = MqttCfgDict["GenerateFakeData"];
+                InputPathDirectory = MqttCfgDict["inputPathDirectory"];
+                //InputPathDirectory.Replace("\\\\", "\\");
+                InputFile = MqttCfgDict["inputFile"];
+                string[] tempFileFormat = InputFile.Split('.');
+                InputFileFormat = tempFileFormat[1].ToUpper();
+                TimeStampName = MqttCfgDict["timeStampName"];
+                Cycle = Convert.ToInt32(MqttCfgDict["Cycle"]);
 
-            ConfigurationTopic = MqttCfgDict["ConfigurationTopic"];
-            Agent = MqttCfgDict["Agent"];
-            ServerUrl = MqttCfgDict["ServerUrl"];
-            MqttTopic = MqttCfgDict["MqttTopic"];
-            MqttTopicPublish = MqttCfgDict["MqttTopicPublish"];
-            MqttIpAddressTopicPublish = MqttCfgDict["MqttIpAddressTopicPublish"];
-            GenerateFakeData = MqttCfgDict["GenerateFakeData"];
-            InputPathDirectory = MqttCfgDict["inputPathDirectory"];
-            //InputPathDirectory.Replace("\\\\", "\\");
-            InputFile = MqttCfgDict["inputFile"];
-            string[] tempFileFormat = InputFile.Split('.');
-            InputFileFormat = tempFileFormat[1].ToUpper();
-            TimeStampName = MqttCfgDict["timeStampName"];
-            RefreshTime = Convert.ToInt32( MqttCfgDict["refreshTime"] );
+                // variable parameters
+                ForwardMeasure = Convert.ToBoolean(MqttCfgDict["ForwardMeasure"]);
+                MachineType = MqttCfgDict["MachineType"];
+                MachineModel = MqttCfgDict["MachineModel"];
+                MachineNumber = Convert.ToInt32(MqttCfgDict["MachineNumber"]);
+                Part = MqttCfgDict["Part"];
+                PartNumber = Convert.ToInt32(MqttCfgDict["PartNumber"]);
+                ReadClock = Convert.ToInt32(MqttCfgDict["ReadClock"]);
+                ReplaceUtcTime = Convert.ToBoolean(MqttCfgDict["ReplaceUtcTime"]);
+                RoundTimeStamp = Convert.ToBoolean(MqttCfgDict["RoundTimeStamp"]);
+                StoreMeasure = Convert.ToBoolean(MqttCfgDict["StoreMeasure"]);
 
-            // variable parameters
-            ForwardMeasure = Convert.ToBoolean(MqttCfgDict["ForwardMeasure"]);
-            MachineType = MqttCfgDict["MachineType"];
-            MachineModel = MqttCfgDict["MachineModel"];
-            MachineNumber = Convert.ToInt32(MqttCfgDict["MachineNumber"]);
-            Part = MqttCfgDict["Part"];
-            PartNumber = Convert.ToInt32(MqttCfgDict["PartNumber"]);
-            ReadClock = Convert.ToInt32(MqttCfgDict["ReadClock"]);
-            ReplaceUtcTime = Convert.ToBoolean(MqttCfgDict["ReplaceUtcTime"]);
-            RoundTimeStamp = Convert.ToBoolean(MqttCfgDict["RoundTimeStamp"]);
-            StoreMeasure = Convert.ToBoolean(MqttCfgDict["StoreMeasure"]);
-
+                // PostgreSQL DB information
+                DbServer = MqttCfgDict["DbServer"];
+                DbUser = MqttCfgDict["DbUser"];
+                DbPort = MqttCfgDict["DbPort"];
+                DbPassword = MqttCfgDict["DbPassword"];
+                DbName = MqttCfgDict["DbName"];
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: One or more variables are missing or are wrong in the Configuration topic:\n" + ex);
+                throw;
+            }
         }
     }
 }

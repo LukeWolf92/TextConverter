@@ -19,6 +19,7 @@ namespace TextConverter
                 string[] values;
                 string excelRow = "";
                 string tempTimeStamp =""; // stores and add the timestamp of each row, at the end of the every "ReadLine()"
+                string product = "";
                 int k = 0;
 
                 while (!reader.EndOfStream)
@@ -48,6 +49,11 @@ namespace TextConverter
                                     {
                                         measurements.TextValue = values[i];
                                     }
+                                    if (measurements.ValueKind == mqttCfgSettings.Part)
+                                    {
+                                        product = values[i];
+                                    }
+                                        
                                     measurementsList.Add(measurements);
                                 }
                             }
@@ -56,6 +62,7 @@ namespace TextConverter
                         for ( k = k; k<measurementsList.Count; k++ )
                         {
                             measurementsList[k].TimeStamp = Convert.ToDateTime(tempTimeStamp);
+                            measurementsList[k].Part = product;                            
                         }                        
                     }                    
                 }

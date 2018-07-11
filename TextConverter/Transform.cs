@@ -9,7 +9,8 @@ namespace TextConverter
     {
         private static readonly UtilsXML handleXML = new UtilsXML();
         private static readonly UtilsText handleText = new UtilsText();
-        private static readonly UtilsCSV handleCSV = new UtilsCSV();
+        private static readonly UtilsCSV handleCSV = new UtilsCSV();        
+        
 
         public void Start(SettingsFromXML settingsFromXML, MqttCfgSettingsOrganiser mqttCfgSettings, MqttPublisher mqttPublisher)
         {
@@ -22,11 +23,11 @@ namespace TextConverter
                 measurementsList = readingFromInput(settingsFromXML, mqttCfgSettings);
                 Console.WriteLine("Adding info from MQTT Cfg");
                 measurementsList = InsertMachineDataFromMqttCfg(measurementsList, mqttCfgSettings);
-                Console.WriteLine("Publishing to MQTT topic");
+                Console.WriteLine("Checking Duplicates & Storing into PostgreSQL Database & forwarding onto MQTT Topic");
                 writingIntoOutput(measurementsList, mqttCfgSettings, mqttPublisher);
-                Console.WriteLine("Delay for refresh: " + mqttCfgSettings.RefreshTime / 1000 + "seconds");
-                System.Threading.Thread.Sleep(mqttCfgSettings.RefreshTime);
-                Console.WriteLine("Cleaning cache and starting a new cycle");
+                Console.WriteLine("Waiting Cycle time for refresh: " + mqttCfgSettings.Cycle / 1000 + "seconds");
+                System.Threading.Thread.Sleep(mqttCfgSettings.Cycle);
+                Console.WriteLine("Cleaning cache and starting a new detection");
                 measurementsList.Clear();
             }
         }
@@ -68,14 +69,14 @@ namespace TextConverter
         {
             foreach ( var measurements in measurementsList )
             {
-                measurements.ReplaceUtcTime = mqttCfgSettings.ReplaceUtcTime;
+                measurements.ReplaceUtcTime = mqttCfgSettings.ReplaceUtcTime;                
                 measurements.RoundTimeStamp = mqttCfgSettings.RoundTimeStamp;
                 measurements.ReadClock = mqttCfgSettings.ReadClock;
 
                 measurements.ForwardMeasure = mqttCfgSettings.ForwardMeasure;
                 measurements.StoreMeasure = mqttCfgSettings.StoreMeasure;
 
-                measurements.Part = mqttCfgSettings.Part;
+                //measurements.Part = mqttCfgSettings.Part;
                 measurements.PartNumber = mqttCfgSettings.PartNumber;
 
                 measurements.MachineNumber = mqttCfgSettings.MachineNumber;
@@ -89,27 +90,51 @@ namespace TextConverter
         private static void writingIntoOutput(List<Measurements> measurementsList, MqttCfgSettingsOrganiser mqttCfgSettings, MqttPublisher mqttPublisher)
         {
             if (measurementsList.Capacity != 0)
-            {
-                try
-                {                    
-                    File.WriteAllText(Directory.GetCurrentDirectory() + "\\Output\\output.json", JsonConvert.SerializeObject(measurementsList));
-                    foreach (var measure in measurementsList)
+            {           
+                //File.WriteAllText(Directory.GetCurrentDirectory() + "\\Output\\output.json", JsonConvert.SerializeObject(measurementsList));
+                // Opens the SQL Connection to the Postgre Database
+                PostgreSqlManager Sql = new PostgreSqlManager(mqttCfgSettings);
+                int Duplicates = 0;
+                foreach (var measure in measurementsList)
+                {
+                    string json = JsonConvert.SerializeObject(measure);
+                    bool IsDuplicate = true;
+                    // CHECK DUPLICATE & STORE INTO DB
+                    try
                     {
-                        string json = JsonConvert.SerializeObject(measure);
-                        mqttPublisher.Publish(json, mqttCfgSettings);
-                        //System.Threading.Thread.Sleep(100);
+                        IsDuplicate = Sql.CheckingDuplicate(measure, mqttCfgSettings);
+
+                        if (IsDuplicate == false)
+                            Sql.StoreIntoPostgreSQL(measure, mqttCfgSettings);
+                    }
+                    catch (Exception StoreIntoDb)
+                    {
+                        Console.WriteLine("ERROR: Failed to committ transaction on PostgreSQL DB:\n" + StoreIntoDb);
+                    }                    
+
+                    if (IsDuplicate == false)
+                    {
+                        // PUBLISHING ON MQTT TOPIC
+                        try
+                        {
+                            mqttPublisher.Publish(json, mqttCfgSettings);
+                        }
+                        catch (Exception Publish)
+                        {
+                            Console.WriteLine("ERROR: Failed to publish measurement on MQTT:\n" + Publish);
+                        }
+                    }
+                    else
+                    {
+                        Duplicates++;
                     }
                 }
-                catch (Exception ex2)
-                {
-                    Console.WriteLine("ERROR: Failed to generate output file:\n" + ex2);
-                    throw;
-                }
+                Console.WriteLine("Duplicate measurements found: " + Duplicates);
             }
             else
             {
-                Console.WriteLine("The input is empty, no output is going to be generated at this cycle.");
+                Console.WriteLine("The input is empty, no output is going to be generated at this cycle...");
             }
-        }
+        }                
     }
 }
