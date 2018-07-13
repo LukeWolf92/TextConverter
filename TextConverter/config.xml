@@ -7,9 +7,6 @@
     <firstValue>TimeStamp</firstValue>
     <lastValue>Value</lastValue>
   </input>
-  <output>
-    <outputPathDirectory>C:\Progetti\TextConverter\TextConverter\bin\Debug\netcoreapp2.0\Output</outputPathDirectory>
-  </output>
   <Mqttsettings>
     <MqttTopicSubscribe>software_config/TWINS_M166</MqttTopicSubscribe>
     <MqttIpAddressSubscribe>127.0.0.1</MqttIpAddressSubscribe>
