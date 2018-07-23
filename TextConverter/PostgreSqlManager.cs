@@ -19,7 +19,7 @@ namespace TextConverter
                 mqttCfgSettings.DbServer,
                 mqttCfgSettings.DbPort,
                 mqttCfgSettings.DbUser,
-                mqttCfgSettings.DbPassword,
+                mqttCfgSettings.DbPassword,                
                 mqttCfgSettings.DbName);
 
             // Making connection with Npgsql provider

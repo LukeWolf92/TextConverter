@@ -9,7 +9,7 @@ namespace TextConverter
     {
         private static readonly UtilsXML handleXML = new UtilsXML();
         private static readonly UtilsText handleText = new UtilsText();
-        private static readonly UtilsCSV handleCSV = new UtilsCSV();        
+        private static readonly UtilsCSV handleCSV = new UtilsCSV();          
         
 
         public void Start(SettingsFromXML settingsFromXML, MqttCfgSettingsOrganiser mqttCfgSettings, MqttPublisher mqttPublisher)
@@ -19,15 +19,21 @@ namespace TextConverter
             while (true)
             {
                 Console.WriteLine("-------------------------------------------------------------");
+
                 Console.WriteLine("Reading from input");
                 measurementsList = readingFromInput(settingsFromXML, mqttCfgSettings);
+
                 Console.WriteLine("Adding info from MQTT Cfg");
                 measurementsList = InsertMachineDataFromMqttCfg(measurementsList, mqttCfgSettings);
+
                 Console.WriteLine("Checking Duplicates & Storing into PostgreSQL Database & forwarding onto MQTT Topic");
                 writingIntoOutput(measurementsList, mqttCfgSettings, mqttPublisher);
+
                 Console.WriteLine("Waiting Cycle time for refresh: " + mqttCfgSettings.Cycle + " minutes");
-                System.Threading.Thread.Sleep(mqttCfgSettings.Cycle * 60 * 1000); // from minutes to ms            
+                System.Threading.Thread.Sleep(mqttCfgSettings.Cycle * 60 * 1000); // from minutes to ms   
+                
                 Console.WriteLine("Cleaning cache and starting a new detection");
+
                 measurementsList.Clear();
             }
         }
@@ -42,7 +48,7 @@ namespace TextConverter
 
                 if (mqttCfgSettings.InputFileFormat == "TXT") 
                 {
-                    measurementsList = handleText.readFromTXT(settingsFromXML, mqttCfgSettings);
+                    measurementsList = handleText.readFromTXT(settingsFromXML, mqttCfgSettings);                    
                 }
                 else if (mqttCfgSettings.InputFileFormat == "XML")
                 {
@@ -50,7 +56,8 @@ namespace TextConverter
                 }
                 else if (mqttCfgSettings.InputFileFormat == "CSV")
                 {
-                    measurementsList = handleCSV.readFromCSV(mqttCfgSettings);
+                    string dateTime = retrieveDateTime(mqttCfgSettings);                    
+                    measurementsList = handleCSV.testCSV(mqttCfgSettings, dateTime);
                 }
             }
             catch (Exception ex1)
@@ -73,13 +80,14 @@ namespace TextConverter
                 measurements.RoundTimeStamp = mqttCfgSettings.RoundTimeStamp;
                 measurements.ReadClock = mqttCfgSettings.ReadClock;
 
-                measurements.ForwardMeasure = mqttCfgSettings.ForwardMeasure;
+                measurements.ForwardMeasure = mqttCfgSettings.ForwardMeasure;                
                 measurements.StoreMeasure = mqttCfgSettings.StoreMeasure;
 
                 // THE "PART" KEY IS BEING SUED FOR THE PRODUCT CODE 
                 // measurements.Part = mqttCfgSettings.Part; 
 
-                measurements.PartNumber = mqttCfgSettings.PartNumber;
+                // This is going to be the Lot Number
+                //measurements.PartNumber = mqttCfgSettings.PartNumber;
 
                 measurements.MachineNumber = mqttCfgSettings.MachineNumber;
                 measurements.MachineType = mqttCfgSettings.MachineType;
@@ -94,7 +102,6 @@ namespace TextConverter
             if (measurementsList.Capacity != 0)
             {           
                 //File.WriteAllText(Directory.GetCurrentDirectory() + "\\Output\\output.json", JsonConvert.SerializeObject(measurementsList));
-
                 // Opens the SQL Connection to the Postgre Database
                 PostgreSqlManager Sql = new PostgreSqlManager(mqttCfgSettings);
                 int Duplicates = 0;
@@ -103,13 +110,13 @@ namespace TextConverter
                 {
                     string json = JsonConvert.SerializeObject(measure);
                     bool IsDuplicate = true;
-                    // CHECK DUPLICATE & STORE INTO DB
+                    // CHECK DUPLICATE & STORE INTO DB                    
                     try
                     {
                         IsDuplicate = Sql.CheckingDuplicate(measure, mqttCfgSettings);
 
                         if (IsDuplicate == false)
-                            Sql.StoreIntoPostgreSQL(measure, mqttCfgSettings);
+                            Sql.StoreIntoPostgreSQL(measure, mqttCfgSettings);                        
                     }
                     catch (Exception StoreIntoDb)
                     {
@@ -122,7 +129,7 @@ namespace TextConverter
                         // PUBLISHING ON MQTT TOPIC
                         try
                         {
-                            mqttPublisher.Publish(json, mqttCfgSettings);                            
+                            mqttPublisher.Publish(json, mqttCfgSettings);            
                         }
                         catch (Exception Publish)
                         {
@@ -138,9 +145,23 @@ namespace TextConverter
                 Console.WriteLine("Measurements sent to MQTT topic: " + Stored);
             }
             else
-            {
+            {                
                 Console.WriteLine("The input is empty, no output is going to be generated at this cycle...");
             }
-        }                
+        }     
+        
+        private static string retrieveDateTime(MqttCfgSettingsOrganiser mqttCfgSettings)
+        {
+            string dateTime;
+
+            dateTime = mqttCfgSettings.InputFile;
+            dateTime = dateTime.Remove(dateTime.IndexOf('.'));
+
+            string year = dateTime.Substring(0,4);
+            string month = dateTime.Substring(4, 2);
+            string day = dateTime.Substring(6, 2);
+
+            return dateTime = day + '/' + month + '/' + year;
+        }
     }
 }
