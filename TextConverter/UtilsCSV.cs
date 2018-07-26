@@ -71,8 +71,8 @@ namespace TextConverter
         }
 
         public List<Measurements> testCSV(MqttCfgSettingsOrganiser mqttCfgSettings, string dateTime)
-        {
-            using (var reader = new StreamReader(mqttCfgSettings.InputPathDirectory + "/" + mqttCfgSettings.InputFile))
+        {            
+            using (var reader = new StreamReader(mqttCfgSettings.InputPathDirectory + "/" + Transform.fileName + ".csv"))
             {
                 List<string[]> varNamesList = new List<string[]>();                
 
@@ -80,7 +80,7 @@ namespace TextConverter
                 for (int i=0; i<5; i++)
                 {                    
                     string[] varNamesArray = reader.ReadLine().Split(',', StringSplitOptions.RemoveEmptyEntries);
-                    varNamesList.Add(varNamesArray);                    
+                    varNamesList.Add(varNamesArray);                                        
                 }
 
 
@@ -88,7 +88,7 @@ namespace TextConverter
                 Dictionary<string, string> productDict = new Dictionary<string, string>();
                 Dictionary<string, string> valuesDict;                
                 string[] excelRow;
-                // READING ALL THE VALUES IN THE EXCEL FILE
+                // READING ALL THE VALUES IN THE EXCEL FILE                
                 while (!reader.EndOfStream)
                 {
                     excelRow = reader.ReadLine().Split(',', StringSplitOptions.RemoveEmptyEntries);
@@ -105,13 +105,13 @@ namespace TextConverter
                         }
                     }
                     else
-                    {
+                    {                        
                         valuesDict = new Dictionary<string, string>();
                         foreach (var pippo in productDict)
                         {
                             valuesDict.Add(pippo.Key, pippo.Value);
                         }
-
+                        
                         string COD_N = "COD-" + Convert.ToInt16(excelRow[1]);
                         int variableIndex=0;
                         switch (COD_N)
@@ -141,7 +141,7 @@ namespace TextConverter
                         int i = 0;                        
                         foreach (var varName in varNamesList[variableIndex])
                         {
-                            valuesDict.Add(varName, excelRow[i]);
+                            valuesDict.Add(varName, excelRow[i]);                            
                             i++;
                         }
                         rawMeasurements.Add(valuesDict);
@@ -172,7 +172,7 @@ namespace TextConverter
                 }
                 measurementsList.Add(measurements);
             }
-
+            
             int cnt = 0;
             foreach (var measure in rawMeasurements)
             {

@@ -9,32 +9,39 @@ namespace TextConverter
     {
         private static readonly UtilsXML handleXML = new UtilsXML();
         private static readonly UtilsText handleText = new UtilsText();
-        private static readonly UtilsCSV handleCSV = new UtilsCSV();          
+        private static readonly UtilsCSV handleCSV = new UtilsCSV();
+        public static string fileName;
         
 
         public void Start(SettingsFromXML settingsFromXML, MqttCfgSettingsOrganiser mqttCfgSettings, MqttPublisher mqttPublisher)
         {
             List<Measurements> measurementsList = new List<Measurements>();
-            
             while (true)
             {
+                
                 Console.WriteLine("-------------------------------------------------------------");
+                generatingFileNameToday();                
+                bool IsFileExist = File.Exists(mqttCfgSettings.InputPathDirectory + "\\" + fileName + ".csv");
+                if (IsFileExist == true)
+                {
+                    Console.WriteLine("Reading from input");
+                    measurementsList = readingFromInput(settingsFromXML, mqttCfgSettings);
 
-                Console.WriteLine("Reading from input");
-                measurementsList = readingFromInput(settingsFromXML, mqttCfgSettings);
+                    Console.WriteLine("Adding info from MQTT Cfg");
+                    measurementsList = InsertMachineDataFromMqttCfg(measurementsList, mqttCfgSettings);
 
-                Console.WriteLine("Adding info from MQTT Cfg");
-                measurementsList = InsertMachineDataFromMqttCfg(measurementsList, mqttCfgSettings);
+                    Console.WriteLine("Checking Duplicates & Storing into PostgreSQL Database & forwarding onto MQTT Topic");
+                    writingIntoOutput(measurementsList, mqttCfgSettings, mqttPublisher);
 
-                Console.WriteLine("Checking Duplicates & Storing into PostgreSQL Database & forwarding onto MQTT Topic");
-                writingIntoOutput(measurementsList, mqttCfgSettings, mqttPublisher);
-
+                    Console.WriteLine("Cleaning cache and starting a new detection");
+                    measurementsList.Clear();
+                }
+                else
+                {
+                    Console.WriteLine("The report does not exist in the specified path: " + mqttCfgSettings.InputPathDirectory);                    
+                }
                 Console.WriteLine("Waiting Cycle time for refresh: " + mqttCfgSettings.Cycle + " minutes");
                 System.Threading.Thread.Sleep(mqttCfgSettings.Cycle * 60 * 1000); // from minutes to ms   
-                
-                Console.WriteLine("Cleaning cache and starting a new detection");
-
-                measurementsList.Clear();
             }
         }
 
@@ -154,7 +161,7 @@ namespace TextConverter
         {
             string dateTime;
 
-            dateTime = mqttCfgSettings.InputFile;
+            dateTime = fileName + ".csv";
             dateTime = dateTime.Remove(dateTime.IndexOf('.'));
 
             string year = dateTime.Substring(0,4);
@@ -162,6 +169,30 @@ namespace TextConverter
             string day = dateTime.Substring(6, 2);
 
             return dateTime = day + '/' + month + '/' + year;
+        }
+
+        private static void generatingFileNameToday()
+        {
+            // cleaning the variable
+            fileName = "";
+
+            DateTime dateToday = DateTime.Today;  
+            
+            int year = Convert.ToInt16(dateToday.Year);
+            int monthNumber = Convert.ToInt16(dateToday.Month);
+            int dayNumber = Convert.ToInt16(dateToday.Day);
+
+            fileName = Convert.ToString(year);
+
+            if (monthNumber <= 9)
+                fileName = fileName + '0' + Convert.ToString(monthNumber);
+            else
+                fileName = fileName + Convert.ToString(monthNumber);
+
+            if (dayNumber <= 9)
+                fileName = fileName + '0' + Convert.ToString(dayNumber);
+            else
+                fileName = fileName + Convert.ToString(dayNumber);
         }
     }
 }

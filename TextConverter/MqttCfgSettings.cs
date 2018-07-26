@@ -59,7 +59,7 @@ namespace TextConverter
                     {
                         MqttCfgDict.Add(tempArray[i], tempArray[i + 1]);
                         i++;
-                    }
+                    }                    
                 }
             }
             try
