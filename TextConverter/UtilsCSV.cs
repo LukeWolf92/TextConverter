@@ -70,9 +70,9 @@ namespace TextConverter
             return measurementsList;
         }
 
-        public List<Measurements> testCSV(MqttCfgSettingsOrganiser mqttCfgSettings, string dateTime)
-        {            
-            using (var reader = new StreamReader(mqttCfgSettings.InputPathDirectory + "/" + Transform.fileName + ".csv"))
+        public List<Measurements> readFromDailyCSV(MqttCfgSettingsOrganiser mqttCfgSettings, string dateTime)
+        {
+            using (var reader = new StreamReader(mqttCfgSettings.InputPathDirectory + "/" + Transform.fileName + ".csv"))            
             {
                 List<string[]> varNamesList = new List<string[]>();                
 
@@ -91,8 +91,7 @@ namespace TextConverter
                 // READING ALL THE VALUES IN THE EXCEL FILE                
                 while (!reader.EndOfStream)
                 {
-                    excelRow = reader.ReadLine().Split(',', StringSplitOptions.RemoveEmptyEntries);
-                    
+                    excelRow = reader.ReadLine().Split(',', StringSplitOptions.RemoveEmptyEntries);                    
                     // FIRST ELEMENT OF VALUES IS TIMESTAMP
                     if (excelRow[0].Contains(":")) 
                     {
@@ -148,7 +147,6 @@ namespace TextConverter
 
                     }
                 }
-
                 insertIntoMeasurementsList(rawMeasurements, dateTime);
             }
             return measurementsList;
@@ -165,7 +163,7 @@ namespace TextConverter
                 measurements.Part = measure["FILEPARAM"];
                 measurements.PartNumber = Convert.ToInt32(measure["BATCH"]);
                 if (oldDateTime != measurements.TimeStamp)
-                {
+                {                    
                     // measurements.ValueKind = "LOTTO";
                     // measurements.Value = Convert.ToInt32(measure["BATCH"]);
                     oldDateTime = measurements.TimeStamp;

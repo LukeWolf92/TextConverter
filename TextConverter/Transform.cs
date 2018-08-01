@@ -20,8 +20,8 @@ namespace TextConverter
             {
                 
                 Console.WriteLine("-------------------------------------------------------------");
-                generatingFileNameToday();                
-                bool IsFileExist = File.Exists(mqttCfgSettings.InputPathDirectory + "\\" + fileName + ".csv");
+                generatingFileNameToday();
+                bool IsFileExist = File.Exists(mqttCfgSettings.InputPathDirectory + "\\" + fileName + ".csv");                
                 if (IsFileExist == true)
                 {
                     Console.WriteLine("Reading from input");
@@ -38,7 +38,7 @@ namespace TextConverter
                 }
                 else
                 {
-                    Console.WriteLine("The report does not exist in the specified path: " + mqttCfgSettings.InputPathDirectory);                    
+                    Console.WriteLine("The report does not exist in the specified path: " + mqttCfgSettings.InputPathDirectory + "\\" + fileName + ".csv");                    
                 }
                 Console.WriteLine("Waiting Cycle time for refresh: " + mqttCfgSettings.Cycle + " minutes");
                 System.Threading.Thread.Sleep(mqttCfgSettings.Cycle * 60 * 1000); // from minutes to ms   
@@ -64,7 +64,7 @@ namespace TextConverter
                 else if (mqttCfgSettings.InputFileFormat == "CSV")
                 {
                     string dateTime = retrieveDateTime(mqttCfgSettings);                    
-                    measurementsList = handleCSV.testCSV(mqttCfgSettings, dateTime);
+                    measurementsList = handleCSV.readFromDailyCSV(mqttCfgSettings, dateTime);
                 }
             }
             catch (Exception ex1)
